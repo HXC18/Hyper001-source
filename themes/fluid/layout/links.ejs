@@ -1,0 +1,124 @@
+<%
+page.layout = "links"
+page.title = theme.links.title || __('links.title')
+page.subtitle = theme.links.subtitle || __('links.subtitle')
+page.banner_img = theme.links.banner_img
+page.banner_img_height = theme.links.banner_img_height
+page.banner_mask_alpha = theme.links.banner_mask_alpha
+page.comment = theme.links.comments.type
+const links = (theme.links.items || []).filter(each => each.title && each.link)
+%>
+
+<div class="links-page">
+  <section class="links-wall-hero" data-reveal>
+    <div class="links-wall-hero__copy">
+      <span class="links-wall-eyebrow">FRIEND LINKS</span>
+      <h2>在各自的数字角落里，彼此点一盏灯。</h2>
+      <p>这里不仅是友链列表，也是一页更完整的交换入口。以后你只需要继续往配置里添加成员卡片，这里就会自动扩展成真正的友链墙。</p>
+      <div class="links-wall-stats">
+        <div class="links-wall-stat">
+          <strong><%= links.length %></strong>
+          <span>已展示站点</span>
+        </div>
+        <div class="links-wall-stat">
+          <strong>24/7</strong>
+          <span>持续在线记录</span>
+        </div>
+        <div class="links-wall-stat">
+          <strong>Open</strong>
+          <span>欢迎交换友链</span>
+        </div>
+      </div>
+    </div>
+    <aside class="links-wall-sitecard" data-float>
+      <div class="links-wall-sitecard__badge">本站信息</div>
+      <h3><%= config.title %></h3>
+      <p><%= config.subtitle || (theme.about && theme.about.intro) || '记录技术、想法与日常实验。' %></p>
+      <dl class="links-wall-sitecard__meta">
+        <div>
+          <dt>名称</dt>
+          <dd><%= config.title %></dd>
+        </div>
+        <div>
+          <dt>链接</dt>
+          <dd><a href="<%= config.url %>" target="_blank" rel="noopener"><%= config.url %></a></dd>
+        </div>
+        <div>
+          <dt>头像</dt>
+          <dd><%= url_for((theme.about && theme.about.avatar) || theme.links.onerror_avatar) %></dd>
+        </div>
+      </dl>
+    </aside>
+  </section>
+
+  <section class="links-wall-panel links-wall-panel--content markdown-body" data-reveal>
+    <h2>交换说明</h2>
+    <p>欢迎和我交换友链。比起单纯互挂，我更希望这里收录的是认真经营、持续更新、内容有自己气质的站点。</p>
+
+    <h3>我更偏好的站点</h3>
+    <ul>
+      <li>技术博客、开发记录、项目复盘</li>
+      <li>设计、创作、写作类个人站</li>
+      <li>有长期维护意愿的独立博客</li>
+    </ul>
+
+    <h3>申请时可以提供这些信息</h3>
+    <pre><code class="yaml">name: 站点名称
+link: https://your-site.example/
+intro: 一句话简介
+avatar: https://your-site.example/avatar.png</code></pre>
+
+    <h3>本站信息</h3>
+    <ul>
+      <li>名称：<%= config.title %></li>
+      <li>链接：<%= config.url %></li>
+      <li>简介：<%= config.subtitle || (theme.about && theme.about.intro) || '记录技术、想法与日常实验。' %></li>
+    </ul>
+  </section>
+
+  <section class="links-wall-panel links-wall-panel--grid" data-reveal>
+    <div class="links-wall-section-head">
+      <div>
+        <span class="links-wall-eyebrow">COLLECTION</span>
+        <h3>友链墙</h3>
+      </div>
+      <p>认真写作、持续维护、内容稳定更新的站点，会很适合出现在这里。</p>
+    </div>
+
+    <% if (links.length) { %>
+      <div class="row links">
+        <% for(const each of links) { %>
+          <div class="card col-lg-4 col-md-6 col-sm-12">
+            <a href="<%= url_for(each.link) %>" class="card-body hover-with-bg" target="_blank" rel="noopener">
+              <div class="card-content">
+                <% if (each.avatar || each.image) { %>
+                  <div class="link-avatar my-auto">
+                    <img src="<%= url_for(each.avatar || each.image) %>" alt="<%= each.title %>"
+                         onerror="this.onerror=null; this.src=this.srcset='<%= url_for(theme.links.onerror_avatar) %>'"/>
+                  </div>
+                <% } %>
+                <div class="link-text">
+                  <div class="link-title"><%- each.title %></div>
+                  <div class="link-intro"><%- each.intro || '' %></div>
+                </div>
+              </div>
+            </a>
+          </div>
+        <% } %>
+      </div>
+    <% } else { %>
+      <div class="links-wall-empty">
+        <strong>这面墙已经准备好了。</strong>
+        <p>现在还没有正式收录的友链，等你把站点名单补进来之后，这里会自动显示成完整卡片网格。</p>
+      </div>
+    <% } %>
+  </section>
+
+  <% if(theme.links.custom && theme.links.custom.enable && theme.links.custom.content) { %>
+    <div class="custom mx-auto links-wall-panel links-wall-panel--custom" data-reveal>
+      <%- theme.links.custom.content %>
+    </div>
+  <% } %>
+</div>
+
+<%- inject_point('linksComments') %>

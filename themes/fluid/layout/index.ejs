@@ -1,0 +1,106 @@
+<%
+if (theme.index.slogan.enable) {
+  page.subtitle = theme.index.slogan.text || config.subtitle || ''
+}
+page.banner_img = theme.index.banner_img
+page.banner_img_height = theme.index.banner_img_height
+page.banner_mask_alpha = theme.index.banner_mask_alpha
+%>
+
+<h1 style="display: none"><%= config.title %></h1>
+<section class="home-hero-panel reveal-item">
+  <div class="home-hero-copy">
+    <span class="home-hero-kicker">HYPER001 BLOG</span>
+    <h2>把技术、项目和想法整理成能反复回看的记录</h2>
+    <p>
+      这里会持续更新开发实践、博客折腾、工具体验和一些阶段性的学习总结。
+      与其让经验散落在聊天记录和草稿里，不如让它们留在一个能长期生长的地方。
+    </p>
+    <div class="home-hero-actions">
+      <a class="home-hero-btn home-hero-btn--primary" href="#board">开始阅读</a>
+      <a class="home-hero-btn" href="<%= url_for('/about/') %>">了解我</a>
+    </div>
+  </div>
+  <div class="home-hero-grid">
+    <div class="home-hero-metric">
+      <strong><%= site.posts.length %></strong>
+      <span>篇文章</span>
+    </div>
+    <div class="home-hero-metric">
+      <strong><%= site.categories.length %></strong>
+      <span>个分类</span>
+    </div>
+    <div class="home-hero-metric">
+      <strong><%= site.tags.length %></strong>
+      <span>个标签</span>
+    </div>
+    <div class="home-hero-note">
+      <span>持续打磨页面与内容，让博客更像一个长期使用的个人工作台。</span>
+    </div>
+  </div>
+</section>
+
+<div class="home-section-head reveal-item">
+  <div>
+    <span class="home-section-kicker">LATEST NOTES</span>
+    <h3>最新内容</h3>
+  </div>
+  <a class="home-section-link" href="<%= url_for('/archives/') %>">查看归档</a>
+</div>
+
+<% page.posts.each(function (post) { %>
+  <div class="row mx-auto index-card">
+    <% var post_url = url_for(post.path), index_img = post.index_img || theme.post.default_index_img %>
+    <% if (index_img) { %>
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="<%= post_url %>" target="<%- theme.index.post_url_target %>">
+          <img src="<%= url_for(index_img) %>" alt="<%= post.title %>">
+        </a>
+      </div>
+    <% } %>
+    <article class="col-12 col-md-<%= index_img ? '8' : '12' %> mx-auto index-info">
+      <h2 class="index-header">
+        <% if (theme.index.post_sticky && theme.index.post_sticky.enable && post.sticky > 0) { %>
+          <i class="index-pin <%= theme.index.post_sticky && theme.index.post_sticky.icon %>" title="Pin on top"></i>
+        <% } %>
+        <a href="<%= post_url %>" target="<%- theme.index.post_url_target %>">
+          <%= post.title %>
+        </a>
+      </h2>
+
+      <% var excerpt = post.description || post.excerpt || (theme.index.auto_excerpt.enable && !post.encrypt && post.content) %>
+      <a class="index-excerpt <%= index_img ? '' : 'index-excerpt__noimg' %>" href="<%= post_url %>" target="<%- theme.index.post_url_target %>">
+        <div>
+          <%- strip_html(excerpt).substring(0, 200).trim().replace(/\n/g, ' ') %>
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        <% if (theme.index.post_meta.date) { %>
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="<%= full_date(post.date, 'YYYY-MM-DD HH:mm') %>" pubdate>
+              <%- date(post.date, config.date_format) %>
+            </time>
+          </div>
+        <% } %>
+        <% if (theme.index.post_meta.category && post.categories.length > 0) { %>
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            <%- partial('_partials/category-chains', { categories: post.categories, limit: 1 }) %>
+          </div>
+        <% } %>
+        <% if (theme.index.post_meta.tag && post.tags.length > 0) { %>
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            <% post.tags.each(function(tag){ %>
+              <a href="<%= url_for(tag.path) %>">#<%- tag.name %></a>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </article>
+  </div>
+<% }) %>
+
+<%- partial('_partials/paginator') %>

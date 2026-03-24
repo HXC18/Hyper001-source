@@ -1,0 +1,81 @@
+navbar:
+  blog_title: Hyper001
+  menu:
+    - key: home
+      link: /
+      icon: iconfont icon-home-fill
+    - key: archive
+      link: /archives/
+      icon: iconfont icon-archive-fill
+    - key: category
+      link: /categories/
+      icon: iconfont icon-category-fill
+    - key: tag
+      link: /tags/
+      icon: iconfont icon-tags-fill
+    - key: about
+      link: /about/
+      icon: iconfont icon-user-fill
+    - key: links
+      link: /links/
+      icon: iconfont icon-link-fill
+  ground_glass:
+    enable: true
+    px: 14
+    alpha: 0.68
+fun_features:
+  typing:
+    enable: true
+    typeSpeed: 42
+    cursorChar: "|"
+color:
+  body_bg_color: "#f4efe8"
+  body_bg_color_dark: "#121722"
+  navbar_bg_color: "#15283d"
+  navbar_bg_color_dark: "#0f1b2b"
+  navbar_text_color: "#f7f3ee"
+  navbar_text_color_dark: "#e8edf5"
+  subtitle_color: "#fef7ef"
+  subtitle_color_dark: "#edf2f7"
+  text_color: "#243447"
+  text_color_dark: "#d7deea"
+  sec_text_color: "#63758a"
+  sec_text_color_dark: "#95a3b8"
+  board_color: rgba(255, 250, 245, 0.82)
+  board_color_dark: rgba(20, 27, 39, 0.9)
+  post_text_color: "#223140"
+  post_text_color_dark: "#dbe4ef"
+  post_heading_color: "#112033"
+  post_heading_color_dark: "#f4f7fb"
+  post_link_color: "#0d6b8a"
+  post_link_color_dark: "#7fd0ef"
+  link_hover_color: "#d66b3d"
+  link_hover_bg_color: rgba(214, 107, 61, 0.08)
+  link_hover_bg_color_dark: rgba(127, 208, 239, 0.12)
+  line_color: "#dfd5ca"
+  line_color_dark: "#314153"
+  button_hover_bg_color: rgba(13, 107, 138, 0.08)
+  button_hover_bg_color_dark: rgba(127, 208, 239, 0.12)
+index:
+  slogan:
+    enable: true
+    text:
+      - 记录技术、想法与日常实验
+      - 把灵感写成可回看的痕迹
+      - 在这里慢慢搭建自己的数字角落
+about:
+  name: Hyper001
+  intro: 写代码，也写下过程。
+links:
+  items:
+    - title: Hyper001 Blog
+      intro: 记录技术、项目、博客折腾和阶段性的灵感。
+      link: https://blog.hyper001.cn/
+      avatar: /img/avatar.png
+  custom:
+    enable: false
+    content: ""
+custom_css:
+  - /css/custom.css
+custom_js:
+  - /js/custom.js

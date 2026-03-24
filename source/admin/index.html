@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hyper001 Admin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/admin/app.css">
+</head>
+<body>
+  <div class="login-screen" id="login-screen">
+    <div class="login-card glass">
+      <span class="eyebrow">ONLINE ADMIN</span>
+      <h1>Hyper001 后台</h1>
+      <p>这是一套适配 GitHub Pages + Cloudflare 的在线管理端。登录后可以直接在线维护文章和友链。</p>
+      <form id="login-form" class="login-form">
+        <label>
+          <span>管理密码</span>
+          <input type="password" name="password" placeholder="输入 Worker 中配置的后台密码" required>
+        </label>
+        <button type="submit" class="primary-btn">进入后台</button>
+      </form>
+      <p class="login-tip">页面是静态的，真正的读写权限由 Cloudflare Worker 和 GitHub Token 控制。</p>
+    </div>
+  </div>
+
+  <div class="admin-shell" id="admin-shell" hidden>
+    <aside class="sidebar glass">
+      <div class="sidebar__brand">
+        <span class="eyebrow">Hyper001</span>
+        <h1>Cloud Admin</h1>
+        <p>前台继续跑在 GitHub Pages，后台操作会直接改仓库并自动触发发布。</p>
+      </div>
+
+      <nav class="sidebar__nav">
+        <button class="nav-btn is-active" data-section="dashboard">概览</button>
+        <button class="nav-btn" data-section="posts">文章</button>
+        <button class="nav-btn" data-section="links">友链</button>
+        <button class="nav-btn" data-section="guide">发布说明</button>
+      </nav>
+
+      <div class="sidebar__hint">
+        <strong>当前模式</strong>
+        <span>Cloudflare Worker Online</span>
+        <p>每次保存都会提交到 GitHub，GitHub Actions 会自动生成并发布博客。</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar glass">
+        <div>
+          <span class="eyebrow">CONTROL PANEL</span>
+          <h2 id="site-title">正在加载站点信息...</h2>
+        </div>
+        <div class="topbar__actions">
+          <a id="site-link" class="ghost-btn" href="/" target="_blank" rel="noopener">打开站点</a>
+          <button id="logout-btn" class="secondary-btn">退出登录</button>
+        </div>
+      </header>
+
+      <section class="section is-active" data-section="dashboard">
+        <div class="cards-grid" id="overview-cards"></div>
+        <div class="panel-grid">
+          <section class="panel glass">
+            <div class="panel__head">
+              <div>
+                <span class="eyebrow">RECENT POSTS</span>
+                <h3>最近文章</h3>
+              </div>
+              <button class="ghost-btn" data-jump="posts">去文章管理</button>
+            </div>
+            <div id="recent-posts" class="list-stack"></div>
+          </section>
+          <section class="panel glass">
+            <div class="panel__head">
+              <div>
+                <span class="eyebrow">PUBLISH FLOW</span>
+                <h3>线上发布流程</h3>
+              </div>
+            </div>
+            <ul class="feature-list">
+              <li>保存文章或友链时，Worker 会直接提交到 GitHub 仓库</li>
+              <li>代码提交后，GitHub Actions 会自动运行 Hexo 构建发布</li>
+              <li>前台通常会在 1 到 2 分钟内更新</li>
+              <li>草稿文章保存后仍会留在仓库，但不会出现在前台</li>
+            </ul>
+          </section>
+        </div>
+      </section>
+
+      <section class="section" data-section="posts">
+        <div class="workspace">
+          <aside class="workspace__list glass">
+            <div class="workspace__toolbar">
+              <div>
+                <span class="eyebrow">POSTS</span>
+                <h3>文章列表</h3>
+              </div>
+              <button id="new-post" class="primary-btn">新建文章</button>
+            </div>
+            <div id="posts-list" class="list-stack"></div>
+          </aside>
+
+          <section class="workspace__editor glass">
+            <div class="workspace__toolbar">
+              <div>
+                <span class="eyebrow">EDITOR</span>
+                <h3 id="post-editor-title">选择一篇文章开始编辑</h3>
+              </div>
+              <div class="toolbar-actions">
+                <button id="delete-post" class="danger-btn">删除</button>
+                <button id="save-post" class="primary-btn">保存文章</button>
+              </div>
+            </div>
+
+            <form id="post-form" class="form-stack">
+              <div class="form-grid">
+                <label>
+                  <span>标题</span>
+                  <input type="text" name="title" placeholder="输入文章标题">
+                </label>
+                <label>
+                  <span>Slug</span>
+                  <input type="text" name="slug" placeholder="hello-world">
+                </label>
+                <label>
+                  <span>发布时间</span>
+                  <input type="datetime-local" name="date">
+                </label>
+                <label class="checkbox-field">
+                  <span>草稿</span>
+                  <input type="checkbox" name="draft">
+                </label>
+                <label>
+                  <span>标签</span>
+                  <input type="text" name="tags" placeholder="Hexo, Blog, Notes">
+                </label>
+                <label>
+                  <span>分类</span>
+                  <input type="text" name="categories" placeholder="开发记录, 博客搭建">
+                </label>
+                <label class="full-width">
+                  <span>摘要</span>
+                  <textarea name="excerpt" rows="3" placeholder="这篇文章写了什么"></textarea>
+                </label>
+                <label class="full-width">
+                  <span>封面图</span>
+                  <input type="text" name="cover" placeholder="/img/post-cover.jpg">
+                </label>
+              </div>
+
+              <label class="full-width">
+                <span>正文 Markdown</span>
+                <textarea name="content" rows="18" placeholder="# 从这里开始写作"></textarea>
+              </label>
+            </form>
+          </section>
+
+          <section class="workspace__preview glass">
+            <div class="workspace__toolbar">
+              <div>
+                <span class="eyebrow">PREVIEW</span>
+                <h3>编辑提示</h3>
+              </div>
+            </div>
+            <article class="preview-body markdown-body">
+              <p>这版线上后台先把“文章和友链的在线管理”打通，正文预览为了保持 Worker 轻量，暂时以编辑器本身为主。</p>
+              <p>下一阶段我可以继续给它补这些能力：</p>
+              <ul>
+                <li>Worker 侧 Markdown 渲染预览</li>
+                <li>图片上传到 GitHub / R2</li>
+                <li>页面管理和分类标签独立管理</li>
+              </ul>
+            </article>
+          </section>
+        </div>
+      </section>
+
+      <section class="section" data-section="links">
+        <div class="workspace workspace--links">
+          <aside class="workspace__list glass">
+            <div class="workspace__toolbar">
+              <div>
+                <span class="eyebrow">FRIEND LINKS</span>
+                <h3>友链条目</h3>
+              </div>
+              <button id="new-link" class="primary-btn">新增友链</button>
+            </div>
+            <div id="links-list" class="list-stack"></div>
+          </aside>
+
+          <section class="workspace__editor glass">
+            <div class="workspace__toolbar">
+              <div>
+                <span class="eyebrow">LINK EDITOR</span>
+                <h3 id="link-editor-title">选择一个友链条目</h3>
+              </div>
+              <div class="toolbar-actions">
+                <button id="delete-link" class="danger-btn">删除</button>
+                <button id="save-links" class="primary-btn">保存友链墙</button>
+              </div>
+            </div>
+
+            <form id="link-form" class="form-stack">
+              <div class="form-grid">
+                <label>
+                  <span>站点名称</span>
+                  <input type="text" name="title" placeholder="Hyper001 Blog">
+                </label>
+                <label>
+                  <span>站点链接</span>
+                  <input type="url" name="link" placeholder="https://example.com/">
+                </label>
+                <label class="full-width">
+                  <span>一句话简介</span>
+                  <textarea name="intro" rows="3" placeholder="记录技术、设计、项目或者生活。"></textarea>
+                </label>
+                <label class="full-width">
+                  <span>头像地址</span>
+                  <input type="text" name="avatar" placeholder="/img/avatar.png">
+                </label>
+              </div>
+            </form>
+          </section>
+
+          <section class="workspace__preview glass">
+            <div class="workspace__toolbar">
+              <div>
+                <span class="eyebrow">LIVE CARD</span>
+                <h3>友链卡片预览</h3>
+              </div>
+            </div>
+            <div id="link-preview" class="friend-card-preview">
+              <div class="friend-card-preview__avatar"></div>
+              <div>
+                <strong>站点名称</strong>
+                <p>一句话简介会显示在这里。</p>
+                <span>https://example.com/</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="section" data-section="guide">
+        <div class="panel-grid">
+          <section class="panel glass">
+            <div class="panel__head">
+              <div>
+                <span class="eyebrow">HOW IT WORKS</span>
+                <h3>这套线上后台怎么工作</h3>
+              </div>
+            </div>
+            <ul class="feature-list">
+              <li>`/admin/` 页面由 Hexo 直接生成，继续托管在 GitHub Pages</li>
+              <li>后台读写请求发给 Cloudflare Worker，不暴露 GitHub Token 到浏览器</li>
+              <li>Worker 通过 GitHub API 修改 `source/_posts` 和 `_config.fluid.yml`</li>
+              <li>仓库更新后，GitHub Actions 自动执行 `npm run build` 和 `npm run deploy`</li>
+            </ul>
+          </section>
+
+          <section class="panel glass">
+            <div class="panel__head">
+              <div>
+                <span class="eyebrow">NEXT STEP</span>
+                <h3>下一阶段最值得补的功能</h3>
+              </div>
+            </div>
+            <ul class="feature-list">
+              <li>图片上传到 GitHub 或 Cloudflare R2</li>
+              <li>单页面、分类、标签管理</li>
+              <li>文章 Markdown 实时预览</li>
+              <li>更细的权限控制和操作日志</li>
+            </ul>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="/admin/config.js"></script>
+  <script src="/admin/app.js" defer></script>
+</body>
+</html>
