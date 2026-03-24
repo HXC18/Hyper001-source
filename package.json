@@ -11,6 +11,7 @@
     "build": "hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
+    "publish:manual": "git pull --ff-only origin main && npm run build && npm run deploy",
     "server": "hexo server"
   },
   "hexo": {

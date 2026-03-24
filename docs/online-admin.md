@@ -7,7 +7,7 @@ This project now includes an online admin panel designed for `GitHub Pages + Clo
 - Blog frontend: `GitHub Pages`
 - Admin page: `/admin/` in the same static site
 - Admin API: `Cloudflare Worker`
-- Auto publish: `GitHub Actions`
+- Publish mode: online editing + local manual publish
 
 ## 1. Deploy the Cloudflare Worker
 
@@ -58,22 +58,26 @@ npm run admin:worker:deploy
 
 You no longer need to hardcode a Worker domain if you use the same-site Cloudflare route above.
 
-## 3. Enable GitHub Auto Deploy
-
-Workflow file:
-
-- `.github/workflows/deploy-blog.yml`
-
-Add this GitHub repository secret:
-
-- `HEXO_DEPLOY_KEY`
-
-This should be the private key that allows `npm run deploy` to push to your published blog repo.
+## 3. Publish the Blog Manually from Local
 
 Recommended repo split for this project:
 
 - source repo: `HXC18/Hyper001-source`
 - publish repo: `HXC18/Hexo.github.io`
+
+After editing content in the online admin, update and publish locally:
+
+```powershell
+npm run publish:manual
+```
+
+This command will:
+
+1. pull the latest content from `Hyper001-source`
+2. build the static site
+3. deploy to `Hexo.github.io`
+
+You still need the local deploy key or SSH setup that allows `npm run deploy` to push to the publish repo.
 
 ## 4. Publish the Static Admin Page
 
@@ -95,7 +99,8 @@ The first stage already supports:
 - login
 - list/create/update/delete posts
 - list/update friend links
-- automatic GitHub commit based publishing
+- GitHub commit based source updates
+- local one-command publish
 
 The next stage can add:
 
@@ -115,5 +120,5 @@ These two parts cannot be completed from code alone unless the machine is alread
    - bind the route `blog.hyper001.cn/admin-api/*`
 
 2. GitHub
-   - add `HEXO_DEPLOY_KEY` in repo secrets
-   - make sure the deploy key can push to your published blog repository
+   - make sure your local machine can run `npm run deploy`
+   - the source repo can be updated by Worker through `GITHUB_TOKEN`
