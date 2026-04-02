@@ -35,7 +35,7 @@
     "hexo-theme-landscape": "^1.0.0",
     "js-yaml": "^4.1.1",
     "marked": "^17.0.5",
-    "slugify": "^1.6.8"
+    "slugify": "^1.6.9"
   },
   "devDependencies": {
     "wrangler": "^4.76.0"
